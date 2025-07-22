@@ -9,11 +9,13 @@ contract PasswordStoreTest is Test {
     PasswordStore public passwordStore;
     DeployPasswordStore public deployer;
     address public owner;
+    address public zubair; //non_owner
 
     function setUp() public {
         deployer = new DeployPasswordStore();
         passwordStore = deployer.run();
         owner = msg.sender;
+        zubair = address(200);
     }
 
     function test_owner_can_set_password() public {
@@ -29,5 +31,16 @@ contract PasswordStoreTest is Test {
 
         vm.expectRevert(PasswordStore.PasswordStore__NotOwner.selector);
         passwordStore.getPassword();
+    }
+
+    function test_anyone_can_set_the_password() public{
+        vm.startPrank(zubair);
+        string memory myPassword="Zubair";
+        passwordStore.setPassword(myPassword);
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        string memory password=passwordStore.getPassword();
+        assertEq(password,myPassword);
     }
 }

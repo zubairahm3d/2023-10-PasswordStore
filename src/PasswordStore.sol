@@ -11,6 +11,7 @@ contract PasswordStore {
     error PasswordStore__NotOwner();
 
     address private s_owner;
+    // @audit anyone can read the password, even if its private
     string private s_password;
 
     event SetNetPassword();
@@ -23,6 +24,8 @@ contract PasswordStore {
      * @notice This function allows only the owner to set a new password.
      * @param newPassword The new password to set.
      */
+
+    // @audit there is no access control, so anyone can set the password
     function setPassword(string memory newPassword) external {
         s_password = newPassword;
         emit SetNetPassword();
@@ -30,6 +33,7 @@ contract PasswordStore {
 
     /*
      * @notice This allows only the owner to retrieve the password.
+     * @audit there is no param of newPassword, as its a getter not a setter
      * @param newPassword The new password to set.
      */
     function getPassword() external view returns (string memory) {
